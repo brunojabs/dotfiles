@@ -1,0 +1,10 @@
+[user]
+	name = Bruno Gomes
+	email = brunojabs@gmail.com
+[core]
+	editor = vim
+	excludesfile = /Users/bruno-magnetis/.gitignore_global
+[push]
+	default = simple
+[rebase]
+	autosquash = true
