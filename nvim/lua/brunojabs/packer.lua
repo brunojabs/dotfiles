@@ -41,14 +41,15 @@ return require('packer').startup(function(use)
   use {  'nvim-lualine/lualine.nvim' }
 
   use {  'kyazdani42/nvim-web-devicons' }
-  use { 'airblade/vim-gitgutter' }
   use { 'j-hui/fidget.nvim' } 
   require"fidget".setup{
     text = {
       spinner = "dots"
     }
   }
-
+  use {
+    'lewis6991/gitsigns.nvim',
+  }
   use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
   use {
     'nvim-tree/nvim-tree.lua',

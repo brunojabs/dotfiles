@@ -5,12 +5,11 @@ lsp.preset('recommended')
 lsp.ensure_installed({
 	'tsserver',
 	'rust_analyzer',
-  'svelte',
 })
 
 lsp.configure('svelte', {
   settings = {
-		svelte = {
+		svelte= {
 			['enable-ts-plugin'] = true
 		}    
   }
@@ -95,5 +94,7 @@ lsp.setup_nvim_cmp({
 
 
 lsp.setup()
-
+require("mason-lspconfig").setup {
+    automatic_installation = false,
+}
 vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
