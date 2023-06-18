@@ -6,7 +6,7 @@ vim.cmd [[packadd packer.nvim]]
 return require('packer').startup(function(use)
   -- Packer can manage itself
   use 'wbthomason/packer.nvim'
-  use 'ishan9299/nvim-solarized-lua'
+  use { 'maxmx03/solarized.nvim' }
   use {
     'nvim-telescope/telescope.nvim', tag = '0.1.0',
     requires = { {'nvim-lua/plenary.nvim'} }
@@ -18,6 +18,7 @@ return require('packer').startup(function(use)
   use {'stevearc/dressing.nvim'}
   use {
     'VonHeikemen/lsp-zero.nvim',
+    branch = 'v2.x',
     requires = {
       -- LSP Support
       {'neovim/nvim-lspconfig'},
@@ -31,6 +32,7 @@ return require('packer').startup(function(use)
       {'saadparwaiz1/cmp_luasnip'},
       {'hrsh7th/cmp-nvim-lsp'},
       {'hrsh7th/cmp-nvim-lua'},
+      {'hrsh7th/cmp-cmdline'},
 
       -- Snippets
       {'L3MON4D3/LuaSnip'},
@@ -41,11 +43,8 @@ return require('packer').startup(function(use)
   use {  'nvim-lualine/lualine.nvim' }
 
   use {  'kyazdani42/nvim-web-devicons' }
-  use { 'j-hui/fidget.nvim' } 
+  use { 'j-hui/fidget.nvim', tag = 'legacy'} 
   require"fidget".setup{
-    text = {
-      spinner = "dots"
-    }
   }
   use {
     'lewis6991/gitsigns.nvim',
@@ -63,4 +62,11 @@ return require('packer').startup(function(use)
     'phaazon/hop.nvim',
     branch = 'v2', -- optional but strongly recommended
   }
+  use "rebelot/kanagawa.nvim"
+
+  use {
+    'numToStr/Comment.nvim',
+  }
+
+  use { "lukas-reineke/indent-blankline.nvim" }
 end)
