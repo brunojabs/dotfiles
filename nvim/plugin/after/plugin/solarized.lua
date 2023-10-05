@@ -1,21 +1,26 @@
-local solarized = require("solarized")
+require("solarized").setup {
+  theme = 'neo', 
+  transparent = false,
+  highlights = function(c, helper)
+local lighten = helper.lighten
 
-solarized:setup {
-  config = {
-    theme = 'vscode', -- or 'neovim' or 'vscode'
-    transparent = false 
-  },
-  colors = {
-    red     = "#ff5555"
-  },
-  highlights = function(colors, darken, lighten, blend)
     return {
-      Visual = {	fg= colors.bg, bg = lighten(colors.comment, 5)},
-      Type = { fg = colors.yellow },
+      Normal =  { fg = c.base0, bg = c.base04 },
+      IndentBlanklineChar = { fg = lighten(c.base01, 50) },
+      Visual = { standout = false }, -- Visual mode selection.
+      VisualNOS = { link = 'Visual'},
+      ColorColumn = { fg = c.base2 },
+      -- Visual = {	fg= colors.bg, bg = lighten(colors.comment, 5)},
+      -- Type = { fg = colors.yellow },
       -- Special = { fg = colors.yellow },
-      -- Search = { bg= colors.yellow, fg= colors.bg},
-      -- IncSearch = { bg = colors.yellow, fg = colors.bg },
-      -- CurSearch = { link = 'IncSearch' },
+      Search = { fg = c.base2 , bg= c.yellow, fg = c.base03, reverse = false },
+      IncSearch = { fg = c.base2, bg = c.yellow, standout = false },
+      CurSearch = { link = 'IncSearch' },
+      DiagnosticError = { link = 'Normal', underline = true }, -- Used as the base highlight group.(except Underline)
+      -- DiffAdd = { fg = c.add, reverse = true },
+      -- DiffChange = { fg = c.change, reverse = true }, -- Changed line
+      -- DiffDelete  = { fg = c.delete, reverse = true }, -- Deleted line
+      -- DiffText = { fg = c.blue, reverse = true } -- Changed Text
       -- ['@parameter'] = { fg = colors.content, bold = true, italic = true },
       -- ['@keyword'] = { fg = colors.content, bold = true },
       -- ['@keyword.function'] = { fg = colors.green },
@@ -24,10 +29,6 @@ solarized:setup {
 }
 vim.o.termguicolors = true
 vim.o.background = "light"
-vim.opt.list = true
+vim.opt.list = false 
 vim.cmd("colorscheme solarized")
 
-require("indent_blankline").setup {
-    show_current_context = true,
-    show_current_context_start = false,
-}

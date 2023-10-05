@@ -1,0 +1,33 @@
+{   
+  "fnconn": {
+    "prefix": "fnconn",
+    "body": [
+      "fn ${1:name}(conn: &mut PgConnection, ${2:arg}: ${3:Type}) -> ${4:Result<()>} {",
+        "    ${5:unimplemented!();}",
+        "}"
+    ],
+    "description": "fn …(conn: &mut PgConnection, …) { … }"
+  },
+  "dbselect": {
+    "prefix": "dbselect",
+    "body": [
+      "fn ${1:name}(conn: &mut PgConnection, ${2:arg}: ${3:Type}) -> ${4:QueryResult<()>} {",
+        "    ${5:table}::table",
+        "       ${6:filter(table::column.eq(param))}",
+        "       .get_results(conn)",
+        "}"
+    ],
+    "description": "fn …(conn: &mut PgConnection, …) { something::table.filter().get_results() }"
+  },
+
+  "enumq": {
+    "prefix": "enumq",
+    "body": [
+      "#[derive(Queryable)]",
+      "struct ${1:Name} {",
+        "    ${2:field}: ${3:Type}",
+        "}"
+    ],
+    "description": "fn …(conn: &mut PgConnection, …) { something::table.filter().get_results() }"
+  }
+}

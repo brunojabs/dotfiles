@@ -15,6 +15,7 @@ lsp.configure('svelte', {
   }
 })
 
+
 -- Setup nvim-cmp.
 local cmp = require'cmp'
 local has_words_before = function()
@@ -54,6 +55,8 @@ require("mason-lspconfig").setup {
     automatic_installation = false,
 }
 
+require'lspconfig'.glint.setup{}
+
 lsp.set_sign_icons({
   error = '✘',
   warn = '▲',
@@ -67,17 +70,12 @@ vim.diagnostic.config({
   signs = true,
 })
 
+lsp.nvim_workspace()
 lsp.setup()
 
 local luasnip = require("luasnip");
 
 cmp.setup({
-  sources = {
-    {name = 'luasnip'},
-    {name = 'nvim_lsp'},
-    {name = 'buffer'},
-    {name = 'path'},
-  },
   preselect = cmp.PreselectMode.None,
     completion = {
     completeopt = 'menu,menuone,noinsert'
@@ -141,5 +139,48 @@ cmp.setup.cmdline(':', {
   })
 })
 
+require("nvim-autopairs").setup {}
+
+-- If you want insert `(` after select function or method item
+local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+cmp.event:on(
+  'confirm_done',
+  cmp_autopairs.on_confirm_done()
+)
+
 require('luasnip.loaders.from_vscode').lazy_load()
+require("luasnip.loaders.from_vscode").lazy_load({paths = "~/.config/nvim/my-snippets"})
+
+
 vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
+
+local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
+parser_config.glimmer = {
+  install_info = {
+    url = "~/.config/nvim/tree-sitter-glimmer",
+    files = {
+      "src/parser.c",
+      "src/scanner.c"
+    }
+  },
+  filetype = "hbs",
+  used_by = {
+    "handlebars",
+    "html.handlebars"
+  }
+}
+
+local rust_opts = {
+    tools = {
+        autoSetHints = true,
+        inlay_hints = {
+            show_parameter_hints = true,
+            parameter_hints_prefix = "<= ",
+            other_hints_prefix = "=> "
+        },
+    },
+}
+
+require("rust-tools").setup(rust_opts)
+
+

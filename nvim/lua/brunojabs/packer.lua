@@ -6,7 +6,7 @@ vim.cmd [[packadd packer.nvim]]
 return require('packer').startup(function(use)
   -- Packer can manage itself
   use 'wbthomason/packer.nvim'
-  use { 'maxmx03/solarized.nvim' }
+  use { 'maxmx03/solarized.nvim'}
   use {
     'nvim-telescope/telescope.nvim', tag = '0.1.0',
     requires = { {'nvim-lua/plenary.nvim'} }
@@ -69,4 +69,14 @@ return require('packer').startup(function(use)
   }
 
   use { "lukas-reineke/indent-blankline.nvim" }
+
+  use {
+    "windwp/nvim-autopairs",
+  }
+
+  use {
+    "ThePrimeagen/harpoon"
+  }
+
+  use { "simrat39/rust-tools.nvim" }
 end)
