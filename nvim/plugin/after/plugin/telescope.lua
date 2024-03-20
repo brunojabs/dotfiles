@@ -1,4 +1,30 @@
 local builtin = require('telescope.builtin')
+local telescope = require('telescope')
+
+require("harpoon").setup()
+require("telescope").load_extension('harpoon')
+
+local harpoon_mark = require("harpoon.mark")
+local harpoon_ui = require("harpoon.ui")
+
 vim.keymap.set('n', '<leader>pf', builtin.live_grep, {})
-vim.keymap.set('n', '<C-p>', builtin.git_files, {})
+vim.keymap.set('n', '<C-p>', builtin.find_files, {})
 vim.keymap.set('n', '<leader>D', builtin.diagnostics, {})
+vim.keymap.set('n', '<leader>bb', builtin.buffers, {})
+vim.keymap.set('n', '<leader>m', harpoon_mark.add_file, {})
+vim.keymap.set('n', '<leader>ph', harpoon_ui.toggle_quick_menu, {})
+vim.keymap.set('n', '<M-0>', harpoon_ui.nav_next, {})
+vim.keymap.set('n', '<M-9>', harpoon_ui.nav_prev, {})
+vim.keymap.set('n', '<leader>pm', telescope.extensions.harpoon.marks, {})
+vim.keymap.set('n', '<leader>pt', function() builtin.grep_string({ search = "TODO(bruno)" }) end, {})
+vim.keymap.set('n', '<leader>pr', builtin.resume, {})
+
+
+vim.keymap.set("n", "<M-1>", function() harpoon_ui.nav_file(1) end)
+vim.keymap.set("n", "<M-2>", function() harpoon_ui.nav_file(2) end)
+vim.keymap.set("n", "<M-3>", function() harpoon_ui.nav_file(3) end)
+vim.keymap.set("n", "<M-4>", function() harpoon_ui.nav_file(4) end)
+vim.keymap.set("n", "<M-5>", function() harpoon_ui.nav_file(5) end)
+vim.keymap.set("n", "<M-6>", function() harpoon_ui.nav_file(6) end)
+vim.keymap.set("n", "<M-7>", function() harpoon_ui.nav_file(7) end)
+vim.keymap.set("n", "<M-8>", function() harpoon_ui.nav_file(8) end)

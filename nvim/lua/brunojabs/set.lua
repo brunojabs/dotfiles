@@ -3,7 +3,7 @@ vim.opt.softtabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 
-vim.opt.laststatus=2
+vim.opt.laststatus = 2
 
 vim.opt.smartindent = true
 
@@ -32,7 +32,10 @@ vim.opt.ignorecase = true
 
 vim.opt.showcmd = true
 
-vim.opt.splitbelow=true
+vim.opt.splitbelow = true
 vim.opt.splitright = true
 vim.opt.nu = true
 vim.opt.relativenumber = true
+
+vim.g['test#neovim#term_position'] = "vert"
+vim.g['test#strategy'] = "neovim"
