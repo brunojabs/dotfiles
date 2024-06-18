@@ -103,6 +103,7 @@ require("lazy").setup({
   {
     'phaazon/hop.nvim',
     branch = 'v2', -- optional but strongly recommended
+    opts = {}
   },
   {
     'stevearc/dressing.nvim',
@@ -110,7 +111,7 @@ require("lazy").setup({
   },
   {
     'lewis6991/gitsigns.nvim',
-    config = function()
+    opts = {
       on_attach = function(bufnr)
         local gs = package.loaded.gitsigns
 
@@ -151,7 +152,7 @@ require("lazy").setup({
         -- Text object
         map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
       end
-    end
+    },
   },
   {
     'maxmx03/solarized.nvim',
@@ -261,6 +262,14 @@ require("lazy").setup({
     config = function()
       -- Setup nvim-cmp.
       local cmp = require('cmp')
+
+      local cmp_lsp = require("cmp_nvim_lsp")
+      local capabilities = vim.tbl_deep_extend(
+        "force",
+        {},
+        vim.lsp.protocol.make_client_capabilities(),
+        cmp_lsp.default_capabilities())
+
       local has_words_before = function()
         local line, col = unpack(vim.api.nvim_win_get_cursor(0))
         return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
@@ -339,7 +348,13 @@ require("lazy").setup({
         window = {
           completion = cmp.config.window.bordered(),
           documentation = cmp.config.window.bordered(),
-        }
+        },
+        sources = cmp.config.sources({
+          { name = 'nvim_lsp' },
+          { name = 'luasnip' }, -- For luasnip users.
+        }, {
+          { name = 'buffer' },
+        })
       })
 
       -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
