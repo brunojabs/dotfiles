@@ -65,7 +65,7 @@ require("lazy").setup({
     opts = {}
   },
   'j-hui/fidget.nvim',
-  { 'akinsho/bufferline.nvim', dependencies = 'nvim-tree/nvim-web-devicons', lazy = false },
+  { 'akinsho/bufferline.nvim', dependencies = 'nvim-tree/nvim-web-devicons', opts = {} },
   {
     'nvim-tree/nvim-tree.lua',
     dependencies = {
@@ -240,6 +240,37 @@ require("lazy").setup({
     end
   },
   {
+    "elixir-tools/elixir-tools.nvim",
+    version = "*",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      local elixir = require("elixir")
+      local elixirls = require("elixir.elixirls")
+
+      elixir.setup {
+        nextls = { enable = true },
+        elixirls = {
+          enable = true,
+          settings = elixirls.settings {
+            dialyzerEnabled = false,
+            enableTestLenses = false,
+          },
+          on_attach = function(client, bufnr)
+            vim.keymap.set("n", "<space>fp", ":ElixirFromPipe<cr>", { buffer = true, noremap = true })
+            vim.keymap.set("n", "<space>tp", ":ElixirToPipe<cr>", { buffer = true, noremap = true })
+            vim.keymap.set("v", "<space>em", ":ElixirExpandMacro<cr>", { buffer = true, noremap = true })
+          end,
+        },
+        projectionist = {
+          enable = true
+        }
+      }
+    end,
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+  },
+  {
     'neovim/nvim-lspconfig',
     dependencies = {
       { 'williamboman/mason.nvim' },
@@ -280,7 +311,7 @@ require("lazy").setup({
       require("mason-lspconfig").setup {
         ensure_installed = {
           "rust_analyzer",
-          "tsserver"
+          "tsserver",
         },
         handlers = {
           function(server_name)
@@ -291,17 +322,18 @@ require("lazy").setup({
         }
       }
 
-      vim.diagnostic.config({
-        float = { source = "always" },
-        virtual_text = false,
-        signs = true,
-      })
+      local signs = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = " " }
+      for type, icon in pairs(signs) do
+        local hl = "DiagnosticSign" .. type
+        vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+      end
 
-      local luasnip = require("luasnip");
+      local cmp_select = { behavior = cmp.SelectBehavior.Select }
       cmp.setup({
-        preselect = cmp.PreselectMode.None,
-        completion = {
-          completeopt = 'menu,menuone,noinsert'
+        snippet = {
+          expand = function(args)
+            require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+          end,
         },
         mapping = {
           ['<C-d>'] = cmp.mapping.scroll_docs(-4),
@@ -309,41 +341,9 @@ require("lazy").setup({
           ['<C-Space>'] = cmp.mapping.complete(),
           ['<C-e>'] = cmp.mapping.close(),
           ['<CR>'] = cmp.mapping.confirm({ select = true }),
-          ["<Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
-            elseif luasnip.expand_or_jumpable() then
-              luasnip.expand_or_jump()
-            elseif has_words_before() then
-              cmp.complete()
-            else
-              fallback() -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
-            end
-          end, { "i", "s" }),
-
-          ["<Down>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
-            elseif luasnip.jumpable(-1) then
-              luasnip.jump(-1)
-            elseif has_words_before() then
-              cmp.complete()
-            else
-              fallback() -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
-            end
-          end, { "i", "s" }),
-
-          ["<S-Tab>"] = cmp.mapping(function()
-            if cmp.visible() then
-              cmp.select_prev_item()
-            end
-          end, { "i", "s" }),
-
-          ["<Up>"] = cmp.mapping(function()
-            if cmp.visible() then
-              cmp.select_prev_item()
-            end
-          end, { "i", "s" }),
+          ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
+          ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
+          ['<C-y>'] = cmp.mapping.confirm({ select = true }),
         },
         window = {
           completion = cmp.config.window.bordered(),
@@ -356,15 +356,16 @@ require("lazy").setup({
           { name = 'buffer' },
         })
       })
-
-      -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
-      cmp.setup.cmdline(':', {
-        mapping = cmp.mapping.preset.cmdline(),
-        sources = cmp.config.sources({
-          { name = 'path' }
-        }, {
-          { name = 'cmdline', keyword_length = 2 }
-        })
+      vim.diagnostic.config({
+        -- update_in_insert = true,
+        float = {
+          focusable = false,
+          style = "minimal",
+          border = "rounded",
+          source = "always",
+          header = "",
+          prefix = "",
+        },
       })
 
       require('luasnip.loaders.from_vscode').lazy_load()
