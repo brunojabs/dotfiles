@@ -123,10 +123,11 @@ require("lazy").setup({
         transparent = true,
         highlights = function(c, helper)
           local lighten = helper.lighten
+          local darken = helper.darken
 
           return {
             Normal = { fg = c.base0, bg = c.base04 },
-            NormalFloat = { fg = c.base0, bg = c.base03 },
+            NormalFloat = { fg = c.base0, bg = darken(c.base03, 5) },
             Visual = { standout = false }, -- Visual mode selection.
             VisualNOS = { link = 'Visual' },
             MatchParen = { bg = lighten(c.magenta, 50), fg = c.base03 },
