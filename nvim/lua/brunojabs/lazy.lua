@@ -21,18 +21,6 @@ require("lazy").setup({
   },
   'j-hui/fidget.nvim',
   { 'akinsho/bufferline.nvim', dependencies = 'nvim-tree/nvim-web-devicons', opts = {} },
-  {
-    'nvim-tree/nvim-tree.lua',
-    dependencies = {
-      'nvim-tree/nvim-web-devicons', -- optional, for file icons
-    },
-    config = function()
-      vim.g.loaded_netrw = 1
-      vim.g.loaded_netrwPlugin = 1
-      vim.api.nvim_set_keymap("n", "<C-\\>", ":NvimTreeToggle<cr>", { silent = true, noremap = true })
-      require("nvim-tree").setup()
-    end
-  },
   { 'rust-lang/rust.vim' },
   {
     "ThePrimeagen/harpoon",
@@ -149,7 +137,16 @@ require("lazy").setup({
       local builtin = require('telescope.builtin')
       local telescope = require('telescope')
 
+      telescope.setup({
+        extensions = {
+          file_browser = {
+            dir_icon = ""
+          }
+        }
+      })
+
       require("telescope").load_extension('harpoon')
+      require("telescope").load_extension("file_browser")
 
       vim.keymap.set('n', '<leader>pf', builtin.live_grep, {})
       vim.keymap.set('n', '<C-p>', builtin.find_files, {})
@@ -158,6 +155,9 @@ require("lazy").setup({
       vim.keymap.set('n', '<leader>pm', telescope.extensions.harpoon.marks, {})
       vim.keymap.set('n', '<leader>pt', function() builtin.grep_string({ search = "TODO(bruno)" }) end, {})
       vim.keymap.set('n', '<leader>pr', builtin.resume, {})
+      vim.keymap.set("n", "<C-\\>", function()
+        telescope.extensions.file_browser.file_browser()
+      end)
     end
   },
 
@@ -359,9 +359,16 @@ require("lazy").setup({
       vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
     end
   },
+  --lazy
   {
-    'nvimdev/dashboard-nvim',
-    event = 'VimEnter',
-    dependencies = { { 'nvim-tree/nvim-web-devicons' } }
+    "nvim-telescope/telescope-file-browser.nvim",
+    dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" }
+  },
+  {
+    "mbbill/undotree",
+
+    config = function()
+      vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
+    end
   }
 })
