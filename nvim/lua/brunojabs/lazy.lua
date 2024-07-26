@@ -141,7 +141,8 @@ require("lazy").setup({
         extensions = {
           file_browser = {
             dir_icon = "",
-            initial_mode = "normal"
+            initial_mode = "normal",
+            hijack_netrw = true,
           }
         }
       })
