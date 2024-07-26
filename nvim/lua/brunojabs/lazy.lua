@@ -140,7 +140,8 @@ require("lazy").setup({
       telescope.setup({
         extensions = {
           file_browser = {
-            dir_icon = ""
+            dir_icon = "",
+            initial_mode = "normal"
           }
         }
       })
