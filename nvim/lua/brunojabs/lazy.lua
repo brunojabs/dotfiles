@@ -17,7 +17,16 @@ require("lazy").setup({
     dependencies = {
       'nvim-tree/nvim-web-devicons', -- optional, for file icons
     },
-    opts = {}
+    opts = {
+      options = {
+        component_separators = '',
+      },
+      sections = {
+        lualine_c = {
+          { 'filename', path = 1, }
+        }
+      }
+    }
   },
   'j-hui/fidget.nvim',
   { 'akinsho/bufferline.nvim', dependencies = 'nvim-tree/nvim-web-devicons', opts = {} },
@@ -140,9 +149,10 @@ require("lazy").setup({
       telescope.setup({
         extensions = {
           file_browser = {
-            dir_icon = "",
             initial_mode = "normal",
             hijack_netrw = true,
+            default_selection_index = 2,
+            preview = { ls_short = true }
           }
         }
       })
@@ -205,14 +215,14 @@ require("lazy").setup({
       local elixirls = require("elixir.elixirls")
 
       elixir.setup {
-        nextls = { enable = false },
+        nextls = { enable = true },
         elixirls = {
           enable = true,
           settings = elixirls.settings {
             dialyzerEnabled = false,
             enableTestLenses = false,
           },
-          on_attach = function(client, bufnr)
+          on_attach = function()
             vim.keymap.set("n", "<space>fp", ":ElixirFromPipe<cr>", { buffer = true, noremap = true })
             vim.keymap.set("n", "<space>tp", ":ElixirToPipe<cr>", { buffer = true, noremap = true })
             vim.keymap.set("v", "<space>em", ":ElixirExpandMacro<cr>", { buffer = true, noremap = true })
@@ -372,5 +382,9 @@ require("lazy").setup({
     config = function()
       vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
     end
-  }
+  },
+  {
+    'kristijanhusak/vim-dadbod-ui',
+    dependencies = 'tpope/vim-dadbod',
+  },
 })
