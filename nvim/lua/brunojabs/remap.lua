@@ -10,6 +10,10 @@ vim.keymap.set("n", "<leader>bD", ":bd!<CR>")
 vim.keymap.set("n", "<M-q>", ":bd<CR>")
 vim.keymap.set("n", "<leader>c", ":Cargo c<CR>")
 vim.keymap.set("n", "<leader>C", ":Cargo clippy<CR>")
+vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
+vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz")
+vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
+
 
 vim.api.nvim_create_autocmd('LspAttach', {
   desc = 'LSP actions',
