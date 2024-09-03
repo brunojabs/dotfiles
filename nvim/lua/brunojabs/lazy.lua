@@ -116,20 +116,23 @@ require("lazy").setup({
       vim.opt.list = false
 
       local opts = {
-        theme = 'neo',
-        transparent = true,
-        highlights = function(c, helper)
-          local lighten = helper.lighten
-          local darken = helper.darken
-
+        pallete = 'solarized',
+        variant = 'autumn',
+        transparent = {
+          enabled = true
+        },
+        on_highlights = function(c)
+          local color = require('solarized.color')
+          local lighten = color.lighten
+          --
           return {
-            Normal = { fg = c.base0, bg = c.base04 },
-            NormalFloat = { fg = c.base0, bg = darken(c.base03, 5) },
-            Visual = { standout = false }, -- Visual mode selection.
-            VisualNOS = { link = 'Visual' },
-            MatchParen = { bg = lighten(c.magenta, 50), fg = c.base03 },
+            -- Normal = { fg = c.base00, bg = c.base04 },
+            -- NormalFloat = { fg = c.base00, bg = darken(c.base03, 5) },
+            -- Visual = { standout = false }, -- Visual mode selection.
+            -- VisualNOS = { link = 'Visual' },
+            MatchParen = { bg = lighten(c.magenta, 50), fg = c.magenta },
             ['@parameter'] = { fg = c.magenta, italic = true, bold = true },
-            ['@lsp.type.parameter'] = { fg = c.base0, bold = true }
+            ['@lsp.type.parameter'] = { fg = c.base00, bold = true }
           }
         end,
       }
