@@ -39,5 +39,9 @@ vim.opt.splitright = true
 vim.opt.nu = true
 vim.opt.relativenumber = true
 
+vim.g.netrw_banner = 0
+vim.g.netrw_winsize = 20
+vim.g.netrw_liststyle = 3
+
 vim.g['test#neovim#term_position'] = "vert"
 vim.g['test#strategy'] = "neovim"

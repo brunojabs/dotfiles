@@ -1,4 +1,5 @@
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
+vim.keymap.set("n", "<C-\\>", vim.cmd.Lex)
 vim.keymap.set("n", "<tab>", vim.cmd.bn)
 vim.keymap.set("n", "<S-tab>", vim.cmd.bp)
 vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
@@ -13,7 +14,12 @@ vim.keymap.set("n", "<leader>C", ":Cargo clippy<CR>")
 vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
 vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz")
 vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
-
+vim.keymap.set("n", "<C-s>", ":w<CiR>")
+vim.keymap.set("n", "<leader>q", ":q<CR>")
+vim.keymap.set("n", "<leader>!q", ":q!<CR>")
+vim.keymap.set("n", "<leader>w", ":w<CR>")
+vim.keymap.set("n", "]q", ":cn<CR>")
+vim.keymap.set("n", "[q", ":cp<CR>")
 
 vim.api.nvim_create_autocmd('LspAttach', {
   desc = 'LSP actions',
@@ -25,8 +31,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
     vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, opts)
     vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, opts)
-    vim.keymap.set("n", "[e", vim.diagnostic.goto_next, opts)
-    vim.keymap.set("n", "]e", vim.diagnostic.goto_prev, opts)
+    vim.keymap.set("n", "]e", vim.diagnostic.goto_next, opts)
+    vim.keymap.set("n", "[e", vim.diagnostic.goto_prev, opts)
     vim.keymap.set("n", "<leader><space>", vim.lsp.buf.code_action, opts)
     vim.keymap.set("v", "<leader><space>", vim.lsp.buf.code_action, opts)
     vim.keymap.set("n", "gh", builtin.lsp_references, opts)

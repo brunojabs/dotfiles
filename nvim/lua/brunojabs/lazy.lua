@@ -121,15 +121,21 @@ require("lazy").setup({
         transparent = {
           enabled = true
         },
-        on_highlights = function(c)
-          local color = require('solarized.color')
+        on_highlights = function(c, color)
+          local colors = c
           local lighten = color.lighten
+          local blend = color.blend
+          local shade = color.shade
+          local tint = color.tint
           --
           return {
             -- Normal = { fg = c.base00, bg = c.base04 },
             -- NormalFloat = { fg = c.base00, bg = darken(c.base03, 5) },
-            -- Visual = { standout = false }, -- Visual mode selection.
+
             -- VisualNOS = { link = 'Visual' },
+
+            IncSearch = { fg = colors.orange, bg = colors.mix_red },
+            Search = { fg = colors.violet, bg = colors.mix_red },
             MatchParen = { bg = lighten(c.magenta, 50), fg = c.magenta },
             ['@parameter'] = { fg = c.magenta, italic = true, bold = true },
             ['@lsp.type.parameter'] = { fg = c.base00, bold = true }
@@ -150,18 +156,15 @@ require("lazy").setup({
       local telescope = require('telescope')
 
       telescope.setup({
-        extensions = {
-          file_browser = {
-            initial_mode = "normal",
-            hijack_netrw = true,
-            default_selection_index = 2,
-            preview = { ls_short = true }
-          }
-        }
-      })
+        defaults = {
+          layout_strategy = 'vertical',
+          layout_config = {
+            vertical = { width = 0.5 }
+          },
+        },
+      });
 
       require("telescope").load_extension('harpoon')
-      require("telescope").load_extension("file_browser")
 
       vim.keymap.set('n', '<leader>pf', builtin.live_grep, {})
       vim.keymap.set('n', '<C-p>', builtin.find_files, {})
@@ -170,9 +173,6 @@ require("lazy").setup({
       vim.keymap.set('n', '<leader>pm', telescope.extensions.harpoon.marks, {})
       vim.keymap.set('n', '<leader>pt', function() builtin.grep_string({ search = "TODO(bruno)" }) end, {})
       vim.keymap.set('n', '<leader>pr', builtin.resume, {})
-      vim.keymap.set("n", "<C-\\>", function()
-        telescope.extensions.file_browser.file_browser()
-      end)
     end
   },
 
@@ -254,12 +254,13 @@ require("lazy").setup({
       { 'hrsh7th/cmp-nvim-lsp' },
       { 'hrsh7th/cmp-nvim-lua' },
       { 'hrsh7th/cmp-cmdline' },
+      { 'hrsh7th/cmp-nvim-lsp-document-symbol' },
 
       -- Snippets
       { 'L3MON4D3/LuaSnip' },
       { 'rafamadriz/friendly-snippets' },
     },
-    config = function()
+    config = function(_, opts)
       -- Setup nvim-cmp.
       local cmp = require('cmp')
 
@@ -280,17 +281,23 @@ require("lazy").setup({
         handlers = {
           function(server_name)
             require("lspconfig")[server_name].setup {
-              capabilities = capabilities
+              capabilities = capabilities,
             }
           end,
         },
       }
 
-      local signs = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = " " }
+      local signs = { Error = "", Warn = "", Hint = "", Info = "" }
       for type, icon in pairs(signs) do
         local hl = "DiagnosticSign" .. type
         vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
       end
+
+      vim.diagnostic.config({
+        virtual_text = false,
+        signs = true,
+        underline = true,
+      })
 
       local cmp_select = { behavior = cmp.SelectBehavior.Select }
       cmp.setup({
@@ -314,17 +321,42 @@ require("lazy").setup({
           documentation = cmp.config.window.bordered(),
         },
         sources = cmp.config.sources({
-          { name = 'nvim_lsp' },
           { name = 'luasnip' }, -- For luasnip users.
+          { name = 'nvim_lsp' },
         }, {
           { name = 'buffer' },
         }),
       })
 
+      cmp.setup.cmdline('/', {
+        mapping = cmp.mapping.preset.cmdline(),
+        window = {
+          completion = cmp.config.window.bordered(),
+          documentation = cmp.config.window.bordered(),
+        },
+        sources = cmp.config.sources({
+          { name = 'nvim_lsp_document_symbol' }
+        })
+      })
+
+      cmp.setup.cmdline(':', {
+        mapping = cmp.mapping.preset.cmdline(),
+        window = {
+          completion = cmp.config.window.bordered(),
+          documentation = cmp.config.window.bordered(),
+        },
+        sources = cmp.config.sources({
+          { name = 'path' }
+        }, {
+          { name = 'cmdline' }
+        }),
+        matching = { disallow_symbol_nonprefix_matching = false }
+      })
+
       vim.diagnostic.config({
         -- update_in_insert = true,
         float = {
-          focusable = false,
+          focusable = true,
           style = "minimal",
           border = "rounded",
           source = "always",
@@ -373,11 +405,6 @@ require("lazy").setup({
       vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
     end
   },
-  --lazy
-  {
-    "nvim-telescope/telescope-file-browser.nvim",
-    dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" }
-  },
   {
     "mbbill/undotree",
 
@@ -388,5 +415,8 @@ require("lazy").setup({
   {
     'kristijanhusak/vim-dadbod-ui',
     dependencies = 'tpope/vim-dadbod',
+    config = function()
+      vim.keymap.set("n", "<leader>db", ":DBUIToggle<CR>")
+    end
   },
 })
