@@ -18,6 +18,7 @@ require("lazy").setup({
       'nvim-tree/nvim-web-devicons', -- optional, for file icons
     },
     opts = {
+      theme = 'rose-pine-alt',
       options = {
         component_separators = '',
       },
@@ -29,7 +30,14 @@ require("lazy").setup({
     }
   },
   'j-hui/fidget.nvim',
-  { 'akinsho/bufferline.nvim', dependencies = 'nvim-tree/nvim-web-devicons', opts = {} },
+  {
+    'akinsho/bufferline.nvim',
+    dependencies = 'nvim-tree/nvim-web-devicons',
+    config = function()
+      local highlights = require('rose-pine.plugins.bufferline')
+      require('bufferline').setup({ highlights = highlights })
+    end
+  },
   { 'rust-lang/rust.vim' },
   {
     "ThePrimeagen/harpoon",
@@ -111,10 +119,6 @@ require("lazy").setup({
     lazy = false,
     priority = 1000,
     config = function()
-      vim.o.termguicolors = true
-      vim.o.background = "light"
-      vim.opt.list = false
-
       local opts = {
         pallete = 'solarized',
         variant = 'autumn',
@@ -134,23 +138,21 @@ require("lazy").setup({
 
             -- VisualNOS = { link = 'Visual' },
 
-            IncSearch = { fg = colors.orange, bg = colors.mix_red },
-            Search = { fg = colors.violet, bg = colors.mix_red },
-            MatchParen = { bg = lighten(c.magenta, 50), fg = c.magenta },
-            ['@parameter'] = { fg = c.magenta, italic = true, bold = true },
-            ['@lsp.type.parameter'] = { fg = c.base00, bold = true }
+            -- IncSearch = { fg = colors.orange, bg = colors.mix_red },
+            -- Search = { fg = colors.violet, bg = colors.mix_red },
+            -- MatchParen = { bg = lighten(c.magenta, 50), fg = c.magenta },
+            -- ['@parameter'] = { fg = c.magenta, italic = true, bold = true },
+            -- ['@lsp.type.parameter'] = { fg = c.base00, bold = true }
           }
         end,
       }
 
-      require('solarized').setup(opts)
-
-      vim.cmd("colorscheme solarized")
+      -- require('solarized').setup(opts)
     end,
   },
   {
     'nvim-telescope/telescope.nvim',
-    dependencies = { { 'nvim-lua/plenary.nvim', 'ThePrimeagen/harpoon' } },
+    dependencies = { { 'nvim-lua/plenary.nvim', 'ThePrimeagen/harpoon', 'benfowler/telescope-luasnip.nvim' } },
     config = function()
       local builtin = require('telescope.builtin')
       local telescope = require('telescope')
@@ -165,6 +167,7 @@ require("lazy").setup({
       });
 
       require("telescope").load_extension('harpoon')
+      require('telescope').load_extension('luasnip')
 
       vim.keymap.set('n', '<leader>pf', builtin.live_grep, {})
       vim.keymap.set('n', '<C-p>', builtin.find_files, {})
@@ -182,7 +185,7 @@ require("lazy").setup({
     config = function()
       require 'nvim-treesitter.configs'.setup {
         -- A list of parser names, or "all"
-        ensure_installed = { "javascript", "lua", "rust", "vim", "typescript" },
+        ensure_installed = { "javascript", "lua", "rust", "vim", "typescript", "tsx" },
 
         -- Install parsers synchronously (only applied to `ensure_installed`)
         sync_install = false,
@@ -195,7 +198,6 @@ require("lazy").setup({
           -- `false` will disable the whole extension
           enable = true,
           additional_vim_regex_highlighting = { "markdown" },
-          disable = { "gitcommit" }
         },
         incremental_selection = {
           enable = true,
@@ -287,7 +289,7 @@ require("lazy").setup({
         },
       }
 
-      local signs = { Error = "", Warn = "", Hint = "", Info = "" }
+      local signs = { Error = "󰅚", Warn = "󰀪", Hint = "󰌶", Info = "" }
       for type, icon in pairs(signs) do
         local hl = "DiagnosticSign" .. type
         vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
@@ -295,7 +297,7 @@ require("lazy").setup({
 
       vim.diagnostic.config({
         virtual_text = false,
-        signs = true,
+        signs = false,
         underline = true,
       })
 
@@ -419,4 +421,66 @@ require("lazy").setup({
       vim.keymap.set("n", "<leader>db", ":DBUIToggle<CR>")
     end
   },
+  {
+    "rose-pine/neovim",
+    name = "rose-pine",
+    config = function()
+      vim.o.termguicolors = true
+      vim.o.list = false
+      vim.o.background = "light"
+
+      require("rose-pine").setup({
+        variant = "auto",      -- auto, main, moon, or dawn
+        dark_variant = "moon", -- main, moon, or dawn
+      })
+
+      vim.cmd("colorscheme rose-pine")
+
+      function Light() vim.cmd("set background=light") end
+
+      function Dark() vim.cmd("set background=dark") end
+
+      vim.cmd("command Light silent lua Light()")
+      vim.cmd("command Dark silent lua Dark()")
+    end
+  },
+  {
+    "tpope/vim-fugitive",
+    config = function()
+      vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
+
+      local Fugitive = vim.api.nvim_create_augroup("Fugitive", {})
+
+      local autocmd = vim.api.nvim_create_autocmd
+      autocmd("BufWinEnter", {
+        group = Fugitive,
+        pattern = "*",
+        callback = function()
+          if vim.bo.ft ~= "fugitive" then
+            return
+          end
+
+          local bufnr = vim.api.nvim_get_current_buf()
+          local opts = { buffer = bufnr, remap = false }
+          vim.keymap.set("n", "<leader>p", function()
+            vim.cmd.Git('push')
+          end, opts)
+
+          -- rebase always
+          vim.keymap.set("n", "<leader>P", function()
+            vim.cmd.Git({ 'pull', '--rebase' })
+          end, opts)
+
+          -- NOTE: It allows me to easily set the branch i am pushing and any tracking
+          -- needed if i did not set the branch up correctly
+          vim.keymap.set("n", "<leader>t", ":Git push -u origin ", opts);
+        end,
+      })
+
+
+      vim.keymap.set("n", "gu", "<cmd>diffget //2<CR>")
+      vim.keymap.set("n", "gh", "<cmd>diffget //3<CR>")
+    end
+  },
+  { 'echasnovski/mini.pairs', version = '*', opts = {} },
 })

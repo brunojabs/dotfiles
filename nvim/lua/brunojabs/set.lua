@@ -39,9 +39,16 @@ vim.opt.splitright = true
 vim.opt.nu = true
 vim.opt.relativenumber = true
 
-vim.g.netrw_banner = 0
-vim.g.netrw_winsize = 20
-vim.g.netrw_liststyle = 3
+vim.g.netrw_banner = 1
+vim.g.netrw_localcopydircmd = 'cp -r'
+vim.g.netrw_winsize = 30
+
+vim.cmd [[
+augroup
+  autocmd!
+  autocmd FileType netrw setlocal bufhidden=wipe
+augroup end
+]]
 
 vim.g['test#neovim#term_position'] = "vert"
 vim.g['test#strategy'] = "neovim"
