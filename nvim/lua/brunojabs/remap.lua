@@ -36,6 +36,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set("v", "<leader><space>", vim.lsp.buf.code_action, opts)
     vim.keymap.set("n", "gh", builtin.lsp_references, opts)
     vim.keymap.set("n", "gr", vim.lsp.buf.rename, opts)
-    vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, opts)
+    vim.keymap.set("i", "<C-space>", vim.lsp.buf.signature_help, opts)
   end
 })

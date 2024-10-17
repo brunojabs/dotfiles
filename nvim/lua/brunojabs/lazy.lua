@@ -20,7 +20,7 @@ require("lazy").setup({
     opts = {
       theme = 'rose-pine-alt',
       options = {
-        component_separators = '',
+        component_separators = { left = '', right = '' }
       },
       sections = {
         lualine_c = {
@@ -59,11 +59,6 @@ require("lazy").setup({
       vim.keymap.set("n", "<M-7>", function() harpoon_ui.nav_file(7) end)
       vim.keymap.set("n", "<M-8>", function() harpoon_ui.nav_file(8) end)
     end
-  },
-  {
-    'phaazon/hop.nvim',
-    branch = 'v2', -- optional but strongly recommended
-    opts = {}
   },
   {
     'stevearc/dressing.nvim',
@@ -115,42 +110,6 @@ require("lazy").setup({
     },
   },
   {
-    'maxmx03/solarized.nvim',
-    lazy = false,
-    priority = 1000,
-    config = function()
-      local opts = {
-        pallete = 'solarized',
-        variant = 'autumn',
-        transparent = {
-          enabled = true
-        },
-        on_highlights = function(c, color)
-          local colors = c
-          local lighten = color.lighten
-          local blend = color.blend
-          local shade = color.shade
-          local tint = color.tint
-          --
-          return {
-            -- Normal = { fg = c.base00, bg = c.base04 },
-            -- NormalFloat = { fg = c.base00, bg = darken(c.base03, 5) },
-
-            -- VisualNOS = { link = 'Visual' },
-
-            -- IncSearch = { fg = colors.orange, bg = colors.mix_red },
-            -- Search = { fg = colors.violet, bg = colors.mix_red },
-            -- MatchParen = { bg = lighten(c.magenta, 50), fg = c.magenta },
-            -- ['@parameter'] = { fg = c.magenta, italic = true, bold = true },
-            -- ['@lsp.type.parameter'] = { fg = c.base00, bold = true }
-          }
-        end,
-      }
-
-      -- require('solarized').setup(opts)
-    end,
-  },
-  {
     'nvim-telescope/telescope.nvim',
     dependencies = { { 'nvim-lua/plenary.nvim', 'ThePrimeagen/harpoon', 'benfowler/telescope-luasnip.nvim' } },
     config = function()
@@ -166,8 +125,9 @@ require("lazy").setup({
         },
       });
 
-      require("telescope").load_extension('harpoon')
-      require('telescope').load_extension('luasnip')
+      telescope.load_extension('harpoon')
+      telescope.load_extension('luasnip')
+      telescope.load_extension('fzf')
 
       vim.keymap.set('n', '<leader>pf', builtin.live_grep, {})
       vim.keymap.set('n', '<C-p>', builtin.find_files, {})
@@ -257,6 +217,7 @@ require("lazy").setup({
       { 'hrsh7th/cmp-nvim-lua' },
       { 'hrsh7th/cmp-cmdline' },
       { 'hrsh7th/cmp-nvim-lsp-document-symbol' },
+      { 'hrsh7th/cmp-nvim-lsp-signature-help' },
 
       -- Snippets
       { 'L3MON4D3/LuaSnip' },
@@ -323,11 +284,16 @@ require("lazy").setup({
           documentation = cmp.config.window.bordered(),
         },
         sources = cmp.config.sources({
-          { name = 'luasnip' }, -- For luasnip users.
-          { name = 'nvim_lsp' },
-        }, {
-          { name = 'buffer' },
-        }),
+          { name = "nvim_lsp",                max_item_count = 40,  priority_weight = 110 },
+          { name = "nvim_lsp_signature_help", priority_weight = 100 },
+          { name = "nvim_lua",                priority_weight = 90 },
+          { name = "luasnip",                 priority_weight = 80, max_item_count = 20 },
+          {
+            name = "buffer",
+            priority_weight = 70,
+            max_item_count = 30
+          }
+        })
       })
 
       cmp.setup.cmdline('/', {
@@ -382,27 +348,9 @@ require("lazy").setup({
       )
 
       require('luasnip.loaders.from_vscode').lazy_load()
+      require('luasnip.loaders.from_vscode').lazy_load({ paths = { "./my-snippets" } })
 
       local lspconfig = require("lspconfig")
-      lspconfig.tailwindcss.setup({
-        root_dir = lspconfig.util.root_pattern(
-          "mix.exs",
-          "tailwind.config.js",
-          "tailwind.config.ts",
-          "postcss.config.js",
-          "postcss.config.ts",
-          "package.json",
-          "node_modules",
-          ".git"
-        ),
-        init_options = {
-          userLanguages = {
-            elixir = "html-eex",
-            eelixir = "html-eex",
-            heex = "html-eex",
-          },
-        },
-      })
 
       vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
     end
@@ -482,5 +430,8 @@ require("lazy").setup({
       vim.keymap.set("n", "gh", "<cmd>diffget //3<CR>")
     end
   },
-  { 'echasnovski/mini.pairs', version = '*', opts = {} },
+  { 'echasnovski/mini.pairs',                   version = '*',                                                                                 opts = {} },
+  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release' },
+  { 'wakatime/vim-wakatime',                    lazy = false },
+  { 'echasnovski/mini.ai',                      version = '*',                                                                                 opts = {} },
 })

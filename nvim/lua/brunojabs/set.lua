@@ -39,16 +39,15 @@ vim.opt.splitright = true
 vim.opt.nu = true
 vim.opt.relativenumber = true
 
+vim.opt.cursorline = true
+
 vim.g.netrw_banner = 1
 vim.g.netrw_localcopydircmd = 'cp -r'
 vim.g.netrw_winsize = 30
 
-vim.cmd [[
-augroup
-  autocmd!
-  autocmd FileType netrw setlocal bufhidden=wipe
-augroup end
-]]
-
-vim.g['test#neovim#term_position'] = "vert"
-vim.g['test#strategy'] = "neovim"
+vim.api.nvim_create_autocmd("BufWinEnter", {
+  callback = function()
+    local win_id = vim.api.nvim_get_current_win()
+    vim.api.nvim_win_set_config(win_id, { border = "rounded" })
+  end,
+})
